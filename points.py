@@ -10,11 +10,12 @@ def decrad (dms):
     return math.radians(dd)
 
 class Point (object):
+
 	lattitude = []
 
 	longitude = []
 
-	height = []
+	height = False
 
 	@property
 	def phi(self):
