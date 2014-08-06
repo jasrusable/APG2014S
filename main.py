@@ -87,21 +87,22 @@ def get_mean_a(p1, p2):
     ssina = get_ssina(mean_phi, delta_phi, delta_lambda)
     return math.atan(ssina / scosa)
 
-def get_delta_a(p1, p2):
-	mean_phi = get_mean(p1.phi, p2.phi)
-	n = get_n(mean_phi)
-	a = get_mean_a(p1, p2)
-	s = get_s(p1, p2)
-	t = math.tan(mean_phi)
-	t2 = math.pow(math.tan(mean_phi), 2)
-	n2 = math.pow(get_second_eccentricity(), 2) * math.pow(math.cos(mean_phi), 2)
-	first = (s/n) * t * math.sin(a)
-	second = (math.pow(s,3)/(24 * math.pow(n, 3))) * t
-	third = (2 + t2 + (2 * n2)) * math.pow(a, 3)
-	fourth = (2 + (7 * n2) + (9 * n2 * t2) + (5 * n2 * n2)) * math.sin(a) * math.pow(math.cos(a), 2)
-	return first + second * (third + fourth)
+def get_delta_a(p1, p2, s = None):
+    if not s:
+        s = get_s(p1, p2)
+    mean_phi = get_mean(p1.phi, p2.phi)
+    n = get_n(mean_phi)
+    a = get_mean_a(p1, p2)
+    t = math.tan(mean_phi)
+    t2 = math.pow(math.tan(mean_phi), 2)
+    n2 = math.pow(get_second_eccentricity(), 2) * math.pow(math.cos(mean_phi), 2)
+    first = (s/n) * t * math.sin(a)
+    second = (math.pow(s,3)/(24 * math.pow(n, 3))) * t
+    third = (2 + t2 + (2 * n2)) * math.pow(a, 3)
+    fourth = (2 + (7 * n2) + (9 * n2 * t2) + (5 * n2 * n2)) * math.sin(a) * math.pow(math.cos(a), 2)
+    return first + second * (third + fourth)
 
-def get_delta_phi(p1, p2, s=None):
+def get_delta_phi(p1, p2, s = None):
     if not s:
         s = get_s(p1, p2)
     a = get_mean_a(p1, p2)
@@ -143,11 +144,15 @@ def solve_inverse(p1, p2):
     return math.degrees(a1) + 360, math.degrees(a2) + 180, s, p2.phi - p1.phi, get_delta_phi(p1, p2)
 
 def solve_direct(p1, s, a1):
-    p2 = Point(phi = -2, lambda_ = 0)
-    while (p2.phi - p1.phi) != get_delta_phi(p1, p2, s):
-        p2.phi = p2.phi + 0.00001
-        print (p2.phi - p1.phi), get_delta_phi(p1, p2, s)
+    p2 = Point(phi = -3, lambda_ = 0)
+    a2 = -8    #while round((p2.phi - p1.phi), 5) != round(get_delta_phi(p1, p2, s), 5):
+    #    p2.phi = p2.phi + 0.000001
+    p2.phi = -0.592568999931
+    while round((a2 - a1), 4) != round(get_delta_a(p1, p2, s), 4):
+        a2 = a2 + 0.0001
+        print get_delta_a(p1, p2, s)
+        print (a2 - a1)
+    print a2
 
 
-
-print solve_inverse(ctn,lgbn)
+solve_direct(ctn, 100, -0.4)
