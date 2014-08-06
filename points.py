@@ -10,17 +10,25 @@ def decrad (dms):
     return math.radians(dd)
 
 class Point (object):
-
 	lattitude = []
 
 	longitude = []
 
-	height = False
+	height = None
 
-	@property
-	def phi(self):
-		return decrad(self.lattitude)
+	phi = None
 
-	@property
-	def lambda_(self):
-		return decrad(self.longitude)
+	lambda_ = None
+
+	def __init__ (self, phi = None, lambda_ = None, lattitude = None, longitude = None, height = None):
+		if lattitude:
+			self.phi = decrad(lattitude)
+		if longitude:
+			self.lambda_ = decrad(longitude)
+		if phi or phi == 0:
+			self.phi = (phi)
+		if lambda_ or lambda_ == 0:
+			self.lambda_ = (lambda_)
+
+
+	

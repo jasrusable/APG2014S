@@ -5,15 +5,10 @@ a = float(6378137)
 b = float(6356752.31)
 f = 1/298.257223563
 
-ctn = Point()
-ctn.lattitude = ['-',33,57,05.163]
-ctn.longitude = ['',18,28,06.7862]
-ctn.height = 83.614
+ctn = Point(lattitude = ['-',33,57,05.163], longitude = ['',18,28,06.7862], height = 83.614)
 
-lgbn = Point()
-lgbn.lattitude = ['-', 32,58,20.9551]
-lgbn.longitude = ['',18,9,27.9488]
-lgbn.height = 64.178
+lgbn = Point(lattitude = ['-', 32,58,20.9551], longitude = ['',18,9,27.9488], height = 64.178)
+
 
 def decrad (dms):   
     deg = float(dms[1])
@@ -106,15 +101,16 @@ def get_delta_a(p1, p2):
 	fourth = (2 + (7 * n2) + (9 * n2 * t2) + (5 * n2 * n2)) * math.sin(a) * math.pow(math.cos(a), 2)
 	return first + second * (third + fourth)
 
-def get_delta_phi(p1, p2):
-    s = get_s(p1, p2)
+def get_delta_phi(p1, p2, s=None):
+    if not s:
+        s = get_s(p1, p2)
     a = get_mean_a(p1, p2)
     mean_phi = get_mean(p1.phi, p2.phi)
     m = get_m(mean_phi)
     t2 = math.pow(math.tan(mean_phi), 2)
     n2 = math.pow(get_second_eccentricity(), 2) * math.pow(math.cos(mean_phi),2)
     first = (s / m) * math.cos(a)
-    second = (math.pow(s, 3) / 24 * math.pow(m, 3)) * (1 / math.pow((1 + n2), 2))
+    second = (math.pow(s, 3) / (24 * math.pow(m, 3))) * (1 / math.pow((1 + n2), 2))
     third = (2 + (3 * t2) + (2 * n2)) * math.pow(math.sin(a), 2) * math.cos(a)
     fourth = 3 * ((n2 * -1) + (3 * n2 * t2) - (n2 * n2)) * math.pow(math.cos(a), 3)
     return first + second * (third + fourth)
@@ -140,6 +136,18 @@ def get_a2(p1, p2):
 	delta_a = get_delta_a(p1, p2)
 	return get_mean_a(p1, p2) + (0.5 * delta_a)
 
-print math.degrees(get_delta_phi(ctn, lgbn))
-print math.degrees(get_a2(ctn, lgbn)) + 360 - 180
-print get_s(ctn, lgbn)
+def solve_inverse(p1, p2):
+    s = get_s(p1, p2)
+    a1 = get_a1(p1, p2)
+    a2 = get_a2(p1, p2)
+    return math.degrees(a1) + 360, math.degrees(a2) + 180, s, p2.phi - p1.phi, get_delta_phi(p1, p2)
+
+def solve_direct(p1, s, a1):
+    p2 = Point(phi = -2, lambda_ = 0)
+    while (p2.phi - p1.phi) != get_delta_phi(p1, p2, s):
+        p2.phi = p2.phi + 0.00001
+        print (p2.phi - p1.phi), get_delta_phi(p1, p2, s)
+
+
+
+print solve_inverse(ctn,lgbn)
