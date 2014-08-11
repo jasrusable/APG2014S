@@ -28,9 +28,9 @@ class Point (object):
 		if longitude:
 			self.lambda_ = decrad(longitude)
 		if phi or phi == 0:
-			self.phi = (phi)
+			self.phi = phi
 		if lambda_ or lambda_ == 0:
-			self.lambda_ = (lambda_)
+			self.lambda_ = lambda_
 		self.height = height
 
 
