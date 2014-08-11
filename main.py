@@ -16,6 +16,16 @@ def read_file(path):
 
 read_file('coords.txt')
 
+print points
+def write_file():
+    file = open("new_coords.txt", "w")
+    for pointname in points:
+        file.write(str(pointname) + ' ' + str(points[pointname].phi) + ' ' + str(points[pointname].lambda_) + ' ' + str(points[pointname].height))
+        file.write("\n")
+    file.close()
+
+write_file()
+
 def get_flattening():
     return (a - b) / a
 
@@ -42,6 +52,12 @@ def get_mean(a, b):
 
 def get_delta(a, b):
     return b - a
+
+def to_positive_radian(radian):
+    if radian < 0:
+        return radian + 2 * math.pi
+    else:
+        return radian
 
 def get_ssina(mean_phi, delta_phi, delta_lambda):
     m = get_m(mean_phi)
@@ -140,21 +156,17 @@ def get_a2(p1, p2):
 
 def solve_inverse(p1, p2):
     s = get_s(p1, p2)
-    a1 = get_a1(p1, p2)
-    a2 = get_a2(p1, p2)
-    # Become positive
-    if a1 < 0:
-        a1 = a1 + 2 * math.pi
-    if a2 < 0:
-        a2 = a2 + 2 * math.pi
+    a1 = to_positive_radian(get_a1(p1, p2))
+    a2 = to_positive_radian(get_a2(p1, p2))
     # Sort out 180 stuff
     if p2.phi > p1.phi:
-        a2 = a2 - math.pi
-    return math.degrees(a1), math.degrees(a2), s, p2.phi - p1.phi, get_delta_phi(p1, p2)
+        a2 = to_positive_radian(a2 - math.pi)
+
+    return math.degrees(a1), math.degrees(a2), s
 
 def solve_direct(p1, s, a1):
     p2 = Point(phi = -0.6, lambda_ = 0)
-    a2 = -8
+    a2 = 0
     dec = 4
     while round((p2.phi - p1.phi), dec) != round(get_delta_phi(p1, p2, s), dec):
         p2.phi = p2.phi + math.pow(10, -dec)
@@ -166,5 +178,5 @@ def solve_direct(p1, s, a1):
     print a2
 
 
-#solve_direct(ctn, 10, 2)
-print solve_inverse(points['ctn'], points['lgbn'])
+#print solve_direct(points['ctn'], 10, 2)
+#print solve_inverse(points['ctn'], points['lgbn'])

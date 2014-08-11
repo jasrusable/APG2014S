@@ -31,6 +31,7 @@ class Point (object):
 			self.phi = (phi)
 		if lambda_ or lambda_ == 0:
 			self.lambda_ = (lambda_)
+		self.height = height
 
 
 	
