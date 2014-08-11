@@ -5,23 +5,16 @@ a = float(6378137)
 b = float(6356752.31)
 f = 1/298.257223563
 
-ctn = Point(lattitude = [-33,57,05.163], longitude = [18,28,06.7862], height = 83.614)
-
-lgbn = Point(lattitude = [-32,58,20.9551], longitude = [18,9,27.9488], height = 64.178)
-
 points = {}
 
 def read_file(path):
     with open(path) as f:
         content = f.readlines()
         for line in content:
-            part = line.split(' ')
+            part = line.rstrip('\n').split(' ')
             points[part[0]] = Point(lattitude=part[1].split(','), longitude=part[2].split(','), height=part[3])
 
-        print content
-
 read_file('coords.txt')
-
 
 def get_flattening():
     return (a - b) / a
@@ -149,7 +142,15 @@ def solve_inverse(p1, p2):
     s = get_s(p1, p2)
     a1 = get_a1(p1, p2)
     a2 = get_a2(p1, p2)
-    return math.degrees(a1) + 360, math.degrees(a2) + 180, s, p2.phi - p1.phi, get_delta_phi(p1, p2)
+    # Become positive
+    if a1 < 0:
+        a1 = a1 + 2 * math.pi
+    if a2 < 0:
+        a2 = a2 + 2 * math.pi
+    # Sort out 180 stuff
+    if p2.phi > p1.phi:
+        a2 = a2 - math.pi
+    return math.degrees(a1), math.degrees(a2), s, p2.phi - p1.phi, get_delta_phi(p1, p2)
 
 def solve_direct(p1, s, a1):
     p2 = Point(phi = -0.6, lambda_ = 0)
@@ -165,4 +166,5 @@ def solve_direct(p1, s, a1):
     print a2
 
 
-solve_direct(ctn, 10, 2)
+#solve_direct(ctn, 10, 2)
+print solve_inverse(points['ctn'], points['lgbn'])

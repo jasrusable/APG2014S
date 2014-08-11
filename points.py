@@ -5,8 +5,7 @@ def decrad (dms):
     min = float(dms[1])  
     sec = float(dms[2])
     if deg < 0:
-       deg = abs(deg)
-       return math.radians(-(deg + (min / 60) + (sec / 3600)))
+       return math.radians(-(abs(deg) + (min / 60) + (sec / 3600)))
     else:
     	return math.radians(deg + (min / 60) + (sec / 3600))
 
