@@ -1,15 +1,18 @@
 import math
 
 def decrad (dms):   
-    deg = float(dms[1])
-    min = float(dms[2])  
-    sec = float(dms[3])  
-    dd = deg + (min / 60) + (sec / 3600)
-    if dms[0] == '-':
-       dd = -dd
-    return math.radians(dd)
+    deg = float(dms[0])
+    min = float(dms[1])  
+    sec = float(dms[2])
+    if deg < 0:
+       deg = abs(deg)
+       return math.radians(-(deg + (min / 60) + (sec / 3600)))
+    else:
+    	return math.radians(deg + (min / 60) + (sec / 3600))
 
 class Point (object):
+	name = ''
+
 	lattitude = []
 
 	longitude = []
@@ -20,7 +23,7 @@ class Point (object):
 
 	lambda_ = None
 
-	def __init__ (self, phi = None, lambda_ = None, lattitude = None, longitude = None, height = None):
+	def __init__ (self, name = None, phi = None, lambda_ = None, lattitude = None, longitude = None, height = None):
 		if lattitude:
 			self.phi = decrad(lattitude)
 		if longitude:

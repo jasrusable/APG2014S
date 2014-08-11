@@ -5,19 +5,23 @@ a = float(6378137)
 b = float(6356752.31)
 f = 1/298.257223563
 
-ctn = Point(lattitude = ['-',33,57,05.163], longitude = ['',18,28,06.7862], height = 83.614)
+ctn = Point(lattitude = [-33,57,05.163], longitude = [18,28,06.7862], height = 83.614)
 
-lgbn = Point(lattitude = ['-', 32,58,20.9551], longitude = ['',18,9,27.9488], height = 64.178)
+lgbn = Point(lattitude = [-32,58,20.9551], longitude = [18,9,27.9488], height = 64.178)
 
+points = {}
 
-def decrad (dms):   
-    deg = float(dms[1])
-    min = float(dms[2])  
-    sec = float(dms[3])  
-    dd = deg + (min / 60) + (sec / 3600)
-    if dms[0] == '-':
-       dd = -dd
-    return math.radians(dd)
+def read_file(path):
+    with open(path) as f:
+        content = f.readlines()
+        for line in content:
+            part = line.split(' ')
+            points[part[0]] = Point(lattitude=part[1].split(','), longitude=part[2].split(','), height=part[3])
+
+        print content
+
+read_file('coords.txt')
+
 
 def get_flattening():
     return (a - b) / a
@@ -161,4 +165,4 @@ def solve_direct(p1, s, a1):
     print a2
 
 
-solve_direct(ctn, 100, -0.4)
+solve_direct(ctn, 10, 2)
