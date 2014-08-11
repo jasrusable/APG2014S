@@ -137,6 +137,10 @@ def get_a2(p1, p2):
 	delta_a = get_delta_a(p1, p2)
 	return get_mean_a(p1, p2) + (0.5 * delta_a)
 
+
+
+
+
 def solve_inverse(p1, p2):
     s = get_s(p1, p2)
     a1 = get_a1(p1, p2)
@@ -144,14 +148,16 @@ def solve_inverse(p1, p2):
     return math.degrees(a1) + 360, math.degrees(a2) + 180, s, p2.phi - p1.phi, get_delta_phi(p1, p2)
 
 def solve_direct(p1, s, a1):
-    p2 = Point(phi = -3, lambda_ = 0)
-    a2 = -8    #while round((p2.phi - p1.phi), 5) != round(get_delta_phi(p1, p2, s), 5):
-    #    p2.phi = p2.phi + 0.000001
-    p2.phi = -0.592568999931
-    while round((a2 - a1), 4) != round(get_delta_a(p1, p2, s), 4):
-        a2 = a2 + 0.0001
-        print get_delta_a(p1, p2, s)
-        print (a2 - a1)
+    p2 = Point(phi = -0.6, lambda_ = 0)
+    a2 = -8
+    dec = 4
+    while round((p2.phi - p1.phi), dec) != round(get_delta_phi(p1, p2, s), dec):
+        p2.phi = p2.phi + math.pow(10, -dec)
+        
+    print p2.phi
+    dec = 4
+    while round((a2 - a1), dec) != round(get_delta_a(p1, p2, s), dec):
+        a2 = a2 + math.pow(10, -dec)
     print a2
 
 
