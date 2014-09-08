@@ -11,18 +11,16 @@ def decrad (dms):
 
 class Point (object):
 	name = ''
-
 	lattitude = []
-
 	longitude = []
-
 	height = None
-
 	phi = None
-
 	lambda_ = None
+	y = None
+	x = None
+	h = self.height
 
-	def __init__ (self, name = None, phi = None, lambda_ = None, lattitude = None, longitude = None, height = None):
+	def __init__ (self, name = None, phi = None, lambda_ = None, lattitude = None, longitude = None, height = None, x, y, z):
 		if lattitude:
 			self.phi = decrad(lattitude)
 		if longitude:
@@ -32,6 +30,7 @@ class Point (object):
 		if lambda_ or lambda_ == 0:
 			self.lambda_ = lambda_
 		self.height = height
+		self.h = height
 
 
 	

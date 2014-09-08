@@ -180,3 +180,36 @@ def solve_direct(p1, s, a1):
 
 #print solve_direct(points['ctn'], 10, 2)
 #print solve_inverse(points['ctn'], points['lgbn'])
+
+
+
+
+
+
+####### Assignment 2 #######
+
+def get_cartesian_coords(point):
+    n = get_n(point.phi)
+    e2 = get_second_eccentricity()
+
+    x = (n + point.height) * math.cos(point.phi) * math.cos(point.lambda_)
+    y = (n + point.height) * math.cos(point.phi) * math.sin(point.lambda_)
+    z = (n *(1 - e2) + point.height) * math.sin(point.phi)
+
+    return x, y, z
+
+def get_ellipsoidal_coords(point):
+    n = get_n(point.phi)
+    p = (n + point.height) * math.cos(point.phi)
+    # p = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
+    e2 = get_second_eccentricity()
+    h = point.height
+
+    lambda_ = math.pow(math.tan(point.y / point.x), -1)
+    #phi = math.pow(math.tan((z/p)*(1-(e2 * n)/(N + h))), -1)
+
+    theta = math.pow(math.tan((z/p)*(a/b)), -1)
+    # Direct solution
+    phi = math.pow((z + e2 * b * math.pow(math.sin(theta), 3))/ (p - e2 * a * math.pow(math.cos(theta, 3))))
+
+    return phi, lambda_, h
