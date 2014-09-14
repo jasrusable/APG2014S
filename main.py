@@ -12,7 +12,7 @@ def read_file(path):
         content = f.readlines()
         for line in content:
             part = line.rstrip('\n').split(' ')
-            points[part[0]] = Point(lattitude=part[1].split(','), longitude=part[2].split(','), height=part[3])
+            points[part[0]] = Point(lattitude=part[1].split(','), longitude=part[2].split(','), height=part[3], name=part[0])
 
 read_file('coords.txt')
 
@@ -239,7 +239,7 @@ def get_local_geodetic(point):
     tan = math.tan
     import numpy
     matrix = numpy.matrix
-    ry = point.phi - math.pi / 2
+    ry = point.phi - math.pi / 2.0
     rz = point.lambda_ - math.pi
     rx = 0
     Py = matrix([[1, 0, 0],
@@ -263,6 +263,77 @@ def get_local_geodetic(point):
     rlgs = Py * Ry * Rz * Rgs
     return rlgs
 
-#print get_cartesian_coords(points['CTWN'])
-#print get_ellipsoidal_coords(points['CTWN'])
-print get_local_geodetic(points['CTWN'])
+def get_geodetic(point):
+    cos = math.cos
+    sin = math.sin
+    tan = math.tan
+    import numpy
+    matrix = numpy.matrix
+    ry = (math.pi / 2.0) - point.phi
+    rz = math.pi - point.lambda_
+    rx = 0
+    Py = matrix([[1, 0, 0],
+                [0, -1, 0],
+                [0, 0, 1],
+                ])
+    Rx = matrix([[1, 0, 0],
+                [0, cos(rx), sin(rx)],
+                [0, -sin(rx), cos(rx)],
+                ])
+    Ry = matrix([[cos(ry), 0, -sin(ry)],
+                [0, 1, 0],
+                [sin(ry), 0, cos(ry)],
+                ])
+    Rz = matrix([[cos(rz), sin(rz), 0],
+                [-sin(rz), cos(rz), 0],
+                [0, 0, 1],
+                ])
+    
+    rlgs = get_local_geodetic(point)
+
+    Rgs = Rz * Ry * Py * rlgs
+    return Rgs
+
+file_ = open("geodetic.txt", "w")
+file_.close()
+for point in points:
+    file_ = open("geodetic.txt", "a")
+    file_.write(str(points[point].name) + ' ')
+    file_.write("\n")
+    file_.write('x: ' + str(get_geodetic(points[point])[0]) + ' y: ' + str(get_geodetic(points[point])[1]) + ' z: ' + str(get_geodetic(points[point])[2]))
+    file_.write("\n")
+    file_.write("\n")
+    file_.close()
+
+file_ = open("local_geodetic.txt", "w")
+file_.close()
+for point in points:
+    file_ = open("local_geodetic.txt", "a")
+    file_.write(str(points[point].name) + ' ')
+    file_.write("\n")
+    file_.write('x: ' + str(get_local_geodetic(points[point])[0]) + ' y: ' + str(get_local_geodetic(points[point])[1]) + ' z: ' + str(get_local_geodetic(points[point])[2]))
+    file_.write("\n")
+    file_.write("\n")
+    file_.close()
+
+file_ = open("cartesian.txt", "w")
+file_.close()
+for point in points:
+    file_ = open("cartesian.txt", "a")
+    file_.write(str(points[point].name) + ' ')
+    file_.write("\n")
+    file_.write('x: ' + str(get_cartesian_coords(points[point])[0]) + ' y: ' + str(get_cartesian_coords(points[point])[1]) + ' z: ' + str(get_cartesian_coords(points[point])[2]))
+    file_.write("\n")
+    file_.write("\n")
+    file_.close()
+
+file_ = open("ellipsoidal.txt", "w")
+file_.close()
+for point in points:
+    file_ = open("ellipsoidal.txt", "a")
+    file_.write(str(points[point].name) + ' ')
+    file_.write("\n")
+    file_.write('lat: ' + str(math.degrees(get_ellipsoidal_coords(points[point])[0])) + ' long: ' + str(math.degrees(get_ellipsoidal_coords(points[point])[1])) + ' height: ' + str(math.degrees(get_ellipsoidal_coords(points[point])[2])))
+    file_.write("\n")
+    file_.write("\n")
+    file_.close()
