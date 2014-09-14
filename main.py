@@ -16,7 +16,6 @@ def read_file(path):
 
 read_file('coords.txt')
 
-print points
 def write_file():
     file = open("new_coords.txt", "w")
     for pointname in points:
@@ -188,23 +187,14 @@ def solve_direct(p1, s, a1):
 
 ####### Assignment 2 #######
 
-def get_cartesian_coords(point):
-    n = get_n(point.phi)
-    e2 = get_second_eccentricity()
-
-    x = (n + point.height) * math.cos(point.phi) * math.cos(point.lambda_)
-    y = (n + point.height) * math.cos(point.phi) * math.sin(point.lambda_)
-    z = (n *(1 - e2) + point.height) * math.sin(point.phi)
-
-    return x, y, z
-
-def get_ellipsoidal_coords(point):
+def get_ellipsoidal_coords2(point):
+    get_cartesian_coords(point)
     n = get_n(point.phi)
     p = (n + point.height) * math.cos(point.phi)
     # p = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
     e2 = get_second_eccentricity()
     h = point.height
-
+    z = point.z
     lambda_ = math.pow(math.tan(point.y / point.x), -1)
     #phi = math.pow(math.tan((z/p)*(1-(e2 * n)/(N + h))), -1)
 
@@ -213,3 +203,66 @@ def get_ellipsoidal_coords(point):
     phi = math.pow((z + e2 * b * math.pow(math.sin(theta), 3))/ (p - e2 * a * math.pow(math.cos(theta, 3))))
 
     return phi, lambda_, h
+
+def get_cartesian_coords(point):
+    cos = math.cos
+    sin = math.sin
+    tan = math.tan
+    n = get_n(point.phi)
+    e2 = get_second_eccentricity()
+    h = point.height
+    x = (n + h) * cos(point.phi) * cos(point.lambda_)
+    y = (n + h) * cos(point.phi) * sin(point.lambda_)
+    z = (n * (1 - e2) + h) * sin(point.phi)
+    return x, y, z
+
+def get_ellipsoidal_coords(point):
+    x,y,z = get_cartesian_coords(point)
+    cos = math.cos
+    sin = math.sin
+    tan = math.tan
+    h = point.height
+    n = get_n(point.phi)
+    e2 = get_second_eccentricity()
+    p = (n + h) * cos(point.phi)
+
+    theta = tan((z/p)*(a/b))**-1
+
+    lambda_ = tan(y / x)**-1
+    phi = tan((z + (e2 * b * (sin(theta)**3)))/(p - e2 * a * (cos(theta))**3))**-1
+    return point.phi, point.lambda_, point.height
+
+def get_local_geodetic(point):
+    x,y,z = get_cartesian_coords(point)
+    cos = math.cos
+    sin = math.sin
+    tan = math.tan
+    import numpy
+    matrix = numpy.matrix
+    ry = point.phi - math.pi / 2
+    rz = point.lambda_ - math.pi
+    rx = 0
+    Py = matrix([[1, 0, 0],
+                [0, -1, 0],
+                [0, 0, 1],
+                ])
+    Rx = matrix([[1, 0, 0],
+                [0, cos(rx), sin(rx)],
+                [0, -sin(rx), cos(rx)],
+                ])
+    Ry = matrix([[cos(ry), 0, -sin(ry)],
+                [0, 1, 0],
+                [sin(ry), 0, cos(ry)],
+                ])
+    Rz = matrix([[cos(rz), sin(rz), 0],
+                [-sin(rz), cos(rz), 0],
+                [0, 0, 1],
+                ])
+    Rgs = matrix([[x], [y], [z]
+                ])
+    rlgs = Py * Ry * Rz * Rgs
+    return rlgs
+
+#print get_cartesian_coords(points['CTWN'])
+#print get_ellipsoidal_coords(points['CTWN'])
+print get_local_geodetic(points['CTWN'])
